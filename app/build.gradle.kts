@@ -26,7 +26,7 @@ android {
             load(rootProject.file("local.properties").inputStream())
         }
         val apiKey = localProperties.getProperty("api.key")
-        buildConfigField("string", "API_KEY", apiKey)
+        buildConfigField("String", "API_KEY", """"$apiKey"""")
     }
 
     buildTypes {
@@ -79,9 +79,15 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp3.logging.interceptor)
 
+    //coil
+    implementation(libs.coil.compose)
+
     //navigation
     implementation(libs.androidx.navigation.compose)
 
     //viewmodel-compose
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+
+    //livedata
+    implementation(libs.androidx.compose.runtime.livedata)
 }
