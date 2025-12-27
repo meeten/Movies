@@ -19,7 +19,7 @@ class MoviesMapper {
                 name = response.name ?: response.alternativeName ?: continue,
                 rating = response.rating.imdb.toString(),
                 year = response.year.toString(),
-                description = response.description ?: continue,
+                description = response.description ?: "",
                 poster = Poster(posterDto.previewUrl, posterDto.url)
             )
 
