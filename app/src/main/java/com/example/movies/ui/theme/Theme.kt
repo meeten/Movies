@@ -1,6 +1,5 @@
 package com.example.movies.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -14,7 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = Color.Black,
-    surface = lightBlue,
+    surface = blue,
 
     onPrimary = Color.White,
     onSurface = Color.White,
@@ -22,7 +21,7 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = Color.White,
-    surface = lightBlue,
+    surface = blue,
 
     onPrimary = Color.Black,
     onSurface = Color.White
