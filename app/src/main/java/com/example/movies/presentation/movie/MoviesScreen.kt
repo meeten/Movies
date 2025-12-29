@@ -19,7 +19,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import com.example.movies.domain.model.Movie
 import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
@@ -76,6 +81,8 @@ fun MoviesContent(movies: List<Movie>) {
 
 @Composable
 fun MovieContent(movie: Movie) {
+    var isLoaded by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp)),
@@ -86,23 +93,35 @@ fun MovieContent(movie: Movie) {
                 model = movie.poster.previewUrl,
                 contentDescription = null,
                 modifier = Modifier.aspectRatio(2f / 3f),
+                onState = {
+                    when (it) {
+                        AsyncImagePainter.State.Empty -> {}
+                        is AsyncImagePainter.State.Error -> {}
+                        is AsyncImagePainter.State.Loading -> {}
+                        is AsyncImagePainter.State.Success -> {
+                            isLoaded = true
+                        }
+                    }
+                },
                 contentScale = ContentScale.FillBounds
             )
 
-            Box(
-                modifier = Modifier
-                    .padding(15.dp)
-                    .clip(CircleShape)
-                    .background(color = Color.Green.copy(alpha = 0.9f, green = 0.7f))
-                    .align(Alignment.TopEnd)
-            ) {
-                Text(
-                    text = movie.rating,
-                    modifier = Modifier.padding(8.dp),
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Bold
-                )
+            if (isLoaded) {
+                Box(
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .clip(CircleShape)
+                        .background(color = Color.Green.copy(alpha = 0.9f, green = 0.7f))
+                        .align(Alignment.TopEnd)
+                ) {
+                    Text(
+                        text = movie.rating,
+                        modifier = Modifier.padding(8.dp),
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
         }
     }
