@@ -2,6 +2,7 @@ package com.example.movies.presentation.movie
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,7 @@ import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
 
 @Composable
-fun MoviesScreen() {
+fun MoviesScreen(onMovieClick: (Movie) -> Unit) {
     val viewModel: MoviesViewModel = viewModel()
     val uiState = viewModel.uiState.observeAsState(MoviesState.Initial).value
 
@@ -60,13 +61,13 @@ fun MoviesScreen() {
         }
 
         is MoviesState.Movies -> {
-            MoviesContent(uiState.movies)
+            MoviesContent(uiState.movies, onMovieClick)
         }
     }
 }
 
 @Composable
-fun MoviesContent(movies: List<Movie>) {
+fun MoviesContent(movies: List<Movie>, onMovieClick: (Movie) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(4.dp),
@@ -74,18 +75,21 @@ fun MoviesContent(movies: List<Movie>) {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(items = movies, key = { it.id }) { movie ->
-            MovieContent(movie)
+            MovieContent(movie, onMovieClick)
         }
     }
 }
 
 @Composable
-fun MovieContent(movie: Movie) {
+fun MovieContent(movie: Movie, onMovieClick: (Movie) -> Unit) {
     var isLoaded by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
-            .clip(RoundedCornerShape(12.dp)),
+            .clip(RoundedCornerShape(12.dp))
+            .clickable {
+                onMovieClick(movie)
+            },
         border = BorderStroke(width = 1.dp, color = Color.Black)
     ) {
         Box {

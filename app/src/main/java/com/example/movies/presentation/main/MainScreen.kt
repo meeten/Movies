@@ -16,19 +16,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.example.movies.R
+import com.example.movies.navigation.AppNavGraph
+import com.example.movies.navigation.rememberNavigationState
+import com.example.movies.presentation.favorite.FavoriteMoviesScreen
+import com.example.movies.presentation.movie.FilmScreen
 import com.example.movies.presentation.movie.MoviesScreen
 import com.example.movies.ui.theme.blue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
+    val navigationState = rememberNavigationState()
 
     Scaffold(topBar = {
         TopAppBar(
             title = { Text(text = stringResource(R.string.app_name)) },
             actions = {
                 IconButton(onClick = {
-
+                    navigationState.navigateToFavoriteMoviesScreen()
                 }) {
                     Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
                 }
@@ -41,7 +46,20 @@ fun MainScreen() {
         )
     }) {
         Column(modifier = Modifier.padding(it)) {
-            MoviesScreen()
+            AppNavGraph(
+                navController = navigationState.navController,
+                moviesScreenContent = {
+                    MoviesScreen { movie ->
+                        navigationState.navigateToFilmScreen(movie)
+                    }
+                },
+                filmScreenContent = {
+                    FilmScreen(it)
+                },
+                favoriteMoviesScreenContent = {
+                    FavoriteMoviesScreen()
+                },
+            )
         }
     }
 }
