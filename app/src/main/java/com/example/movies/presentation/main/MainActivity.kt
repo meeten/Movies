@@ -9,10 +9,9 @@ import com.example.movies.ui.theme.MoviesTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         enableEdgeToEdge()
         setContent {
-            MoviesTheme {
+            MoviesTheme(isEnableEdgeToEdge = true) {
                 MainScreen()
             }
         }
