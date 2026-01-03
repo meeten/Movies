@@ -25,4 +25,13 @@ class MoviesViewModel : ViewModel() {
             _uiState.value = MoviesState.Movies(movies = movies)
         }
     }
+
+    fun loadNextMovies() {
+        _uiState.value = MoviesState.Movies(
+            movies = repository.movies,
+            isLoadingNextMovies = true
+        )
+
+        loadMovies()
+    }
 }

@@ -5,12 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -20,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -49,10 +52,9 @@ fun MoviesScreen(onMovieClick: (Movie) -> Unit) {
         is MoviesState.Initial -> {}
 
         is MoviesState.Loading -> {
-            Column(
+            Box(
                 modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(
                     color = blue
@@ -61,13 +63,23 @@ fun MoviesScreen(onMovieClick: (Movie) -> Unit) {
         }
 
         is MoviesState.Movies -> {
-            MoviesContent(uiState.movies, onMovieClick)
+            MoviesContent(
+                viewModel = viewModel,
+                movies = uiState.movies,
+                onMovieClick = onMovieClick,
+                isLoadingNextMovies = uiState.isLoadingNextMovies
+            )
         }
     }
 }
 
 @Composable
-fun MoviesContent(movies: List<Movie>, onMovieClick: (Movie) -> Unit) {
+fun MoviesContent(
+    viewModel: MoviesViewModel,
+    movies: List<Movie>,
+    onMovieClick: (Movie) -> Unit,
+    isLoadingNextMovies: Boolean,
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(4.dp),
@@ -76,6 +88,26 @@ fun MoviesContent(movies: List<Movie>, onMovieClick: (Movie) -> Unit) {
     ) {
         items(items = movies, key = { it.id }) { movie ->
             MovieContent(movie, onMovieClick)
+        }
+
+        item(span = { GridItemSpan(2) }) {
+            if (isLoadingNextMovies) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = blue,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            } else {
+                SideEffect {
+                    viewModel.loadNextMovies()
+                }
+            }
         }
     }
 }

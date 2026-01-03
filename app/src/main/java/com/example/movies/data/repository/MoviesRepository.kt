@@ -13,12 +13,25 @@ object MoviesRepository {
     private val _movies = mutableListOf<Movie>()
     val movies get() = _movies.toList()
 
+    private var nextFrom: String? = null
     suspend fun loadMovies(): List<Movie> {
-        val data = mapper.mapResponseToMovies(
-            apiService.loadMovies(getApiKey())
-        )
+        val startFrom = nextFrom
 
-        _movies.addAll(data)
+        if (startFrom == null && movies.isNotEmpty()) {
+            return movies
+        }
+
+        val responseDto = if (startFrom == null) {
+            apiService.loadMovies(getApiKey())
+        } else {
+            apiService.loadNextMovies(startFrom, getApiKey())
+        }
+
+        nextFrom = responseDto.moviesDto.next.takeIf {
+            responseDto.moviesDto.hasNext
+        }
+
+        _movies.addAll(mapper.mapResponseToMovies(responseDto))
 
         return movies
     }

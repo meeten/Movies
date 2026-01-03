@@ -8,5 +8,8 @@ sealed class MoviesState {
 
     object Loading : MoviesState()
 
-    data class Movies(val movies: List<Movie>) : MoviesState()
+    data class Movies(
+        val movies: List<Movie>,
+        val isLoadingNextMovies: Boolean = false
+    ) : MoviesState()
 }
