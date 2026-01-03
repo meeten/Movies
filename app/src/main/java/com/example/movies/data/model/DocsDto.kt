@@ -2,6 +2,6 @@ package com.example.movies.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class MoviesResponseDto(
-    @SerializedName("movies") val moviesDto : MoviesDto,
+data class DocsDto(
+    @SerializedName("movie") val movie: MovieDto
 )
