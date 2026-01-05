@@ -19,7 +19,7 @@ import com.example.movies.R
 import com.example.movies.navigation.AppNavGraph
 import com.example.movies.navigation.rememberNavigationState
 import com.example.movies.presentation.favorite.FavoriteMoviesScreen
-import com.example.movies.presentation.movie.FilmScreen
+import com.example.movies.presentation.movie.MovieScreen
 import com.example.movies.presentation.movie.MoviesScreen
 import com.example.movies.ui.theme.blue
 
@@ -49,12 +49,12 @@ fun MainScreen() {
             AppNavGraph(
                 navController = navigationState.navController,
                 moviesScreenContent = {
-                    MoviesScreen { movie ->
-                        navigationState.navigateToFilmScreen(movie)
+                    MoviesScreen { movieId ->
+                        navigationState.navigateToFilmScreen(movieId)
                     }
                 },
                 filmScreenContent = {
-                    FilmScreen(it)
+                    MovieScreen(it)
                 },
                 favoriteMoviesScreenContent = {
                     FavoriteMoviesScreen()

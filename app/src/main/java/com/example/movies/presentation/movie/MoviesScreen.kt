@@ -39,16 +39,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MoviePreview
 import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
 
 @Composable
-fun MoviesScreen(onMovieClick: (Movie) -> Unit) {
+fun MoviesScreen(onMovieClick: (Int) -> Unit) {
     val viewModel: MoviesViewModel = viewModel()
-    val uiState = viewModel.uiState.observeAsState(MoviesState.Initial).value
+    val moviesState = viewModel.uiState.observeAsState(MoviesState.Initial).value
 
-    when (uiState) {
+    when (moviesState) {
         is MoviesState.Initial -> {}
 
         is MoviesState.Loading -> {
@@ -65,9 +65,9 @@ fun MoviesScreen(onMovieClick: (Movie) -> Unit) {
         is MoviesState.Movies -> {
             MoviesContent(
                 viewModel = viewModel,
-                movies = uiState.movies,
+                movies = moviesState.movies,
                 onMovieClick = onMovieClick,
-                isLoadingNextMovies = uiState.isLoadingNextMovies
+                isLoadingNextMovies = moviesState.isLoadingNextMovies
             )
         }
     }
@@ -76,8 +76,8 @@ fun MoviesScreen(onMovieClick: (Movie) -> Unit) {
 @Composable
 fun MoviesContent(
     viewModel: MoviesViewModel,
-    movies: List<Movie>,
-    onMovieClick: (Movie) -> Unit,
+    movies: List<MoviePreview>,
+    onMovieClick: (Int) -> Unit,
     isLoadingNextMovies: Boolean,
 ) {
     LazyVerticalGrid(
@@ -113,20 +113,23 @@ fun MoviesContent(
 }
 
 @Composable
-fun MovieContent(movie: Movie, onMovieClick: (Movie) -> Unit) {
+fun MovieContent(
+    movie: MoviePreview,
+    onMovieClick: (Int) -> Unit
+) {
     var isLoaded by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
             .clickable {
-                onMovieClick(movie)
+                onMovieClick(movie.id)
             },
         border = BorderStroke(width = 1.dp, color = Color.Black)
     ) {
         Box {
             AsyncImage(
-                model = movie.poster.previewUrl,
+                model = movie.previewPoster,
                 contentDescription = null,
                 modifier = Modifier.aspectRatio(2f / 3f),
                 onState = {

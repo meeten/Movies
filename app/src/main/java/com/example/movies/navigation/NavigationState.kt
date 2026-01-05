@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.movies.domain.model.Movie
 
 class NavigationState(val navController: NavHostController) {
 
@@ -12,8 +11,8 @@ class NavigationState(val navController: NavHostController) {
         navController.navigate(Screen.FavoriteMovies.route)
     }
 
-    fun navigateToFilmScreen(movie: Movie) {
-        navController.navigate(Screen.Film.createRoute(movie))
+    fun navigateToFilmScreen(movieId: Int) {
+        navController.navigate(Screen.Film.createRoute(movieId))
     }
 }
 

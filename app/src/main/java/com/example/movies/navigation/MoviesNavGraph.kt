@@ -6,12 +6,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.example.movies.domain.model.Movie
-import com.google.gson.Gson
 
 fun NavGraphBuilder.moviesNavGraph(
     moviesScreenContent: @Composable () -> Unit,
-    filmScreenContent: @Composable (Movie) -> Unit,
+    filmScreenContent: @Composable (Int) -> Unit,
 ) {
     navigation(
         startDestination = Screen.Movies.route,
@@ -24,15 +22,12 @@ fun NavGraphBuilder.moviesNavGraph(
         composable(
             route = Screen.Film.route,
             arguments = listOf(navArgument(Screen.KEY_MOVIE) {
-                type = NavType.StringType
+                type = NavType.IntType
             })
         ) {
-            val movie = Gson().fromJson<Movie>(
-                it.arguments?.getString(Screen.KEY_MOVIE),
-                Movie::class.java
-            )
+            val id = it.arguments?.getInt(Screen.KEY_MOVIE) ?: 0
 
-            filmScreenContent(movie)
+            filmScreenContent(id)
         }
     }
 }

@@ -4,13 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.movies.domain.model.Movie
 
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
     moviesScreenContent: @Composable () -> Unit,
-    filmScreenContent: @Composable (Movie) -> Unit,
+    filmScreenContent: @Composable (Int) -> Unit,
     favoriteMoviesScreenContent: @Composable () -> Unit
 ) {
     NavHost(
