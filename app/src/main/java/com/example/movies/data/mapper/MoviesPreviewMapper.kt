@@ -1,14 +1,13 @@
 package com.example.movies.data.mapper
 
 import com.example.movies.data.model.MoviesResponseDto
-import com.example.movies.domain.model.Movie
-import com.example.movies.domain.model.Poster
+import com.example.movies.domain.model.MoviePreview
 import java.util.Locale
 
-class MoviesMapper {
+class MoviesPreviewMapper {
 
-    fun mapResponseToMovies(responseDto: MoviesResponseDto): List<Movie> {
-        val result = mutableListOf<Movie>()
+    fun mapResponseToMovies(responseDto: MoviesResponseDto): List<MoviePreview> {
+        val result = mutableListOf<MoviePreview>()
 
         val docs = responseDto.moviesDto.docsDto
 
@@ -16,12 +15,10 @@ class MoviesMapper {
             val movie = doc.movie
             val posterDto = movie.poster ?: continue
 
-            val data = Movie(
+            val data = MoviePreview(
                 id = movie.id,
-                name = movie.name ?: movie.alternativeName ?: continue,
                 rating = String.format(Locale.US, "%.1f", movie.rating.kp),
-                year = movie.year.toString(),
-                poster = Poster(posterDto.url, posterDto.previewUrl)
+                previewPoster = posterDto.previewUrl
             )
 
             result.add(data)

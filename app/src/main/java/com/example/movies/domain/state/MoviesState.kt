@@ -1,6 +1,6 @@
 package com.example.movies.domain.state
 
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MoviePreview
 
 sealed class MoviesState {
 
@@ -9,7 +9,7 @@ sealed class MoviesState {
     object Loading : MoviesState()
 
     data class Movies(
-        val movies: List<Movie>,
+        val movies: List<MoviePreview>,
         val isLoadingNextMovies: Boolean = false
     ) : MoviesState()
 }
