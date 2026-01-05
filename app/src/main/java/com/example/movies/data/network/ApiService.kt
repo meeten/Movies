@@ -1,8 +1,10 @@
 package com.example.movies.data.network
 
+import com.example.movies.data.model.MovieDto
 import com.example.movies.data.model.MoviesResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -17,4 +19,10 @@ interface ApiService {
         @Query("next") next: String,
         @Header("X-API-KEY") apiKey: String,
     ): MoviesResponseDto
+
+    @GET("v1.4/movie/{id}")
+    suspend fun loadMovie(
+        @Path("id") id: Int,
+        @Header("X-API-KEY") apiKey: String,
+    ): MovieDto
 }
