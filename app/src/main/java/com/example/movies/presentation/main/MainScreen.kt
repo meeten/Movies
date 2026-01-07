@@ -20,7 +20,7 @@ import com.example.movies.navigation.AppNavGraph
 import com.example.movies.navigation.rememberNavigationState
 import com.example.movies.presentation.favorite.FavoriteMoviesScreen
 import com.example.movies.presentation.movie.MovieScreen
-import com.example.movies.presentation.movie.MoviesScreen
+import com.example.movies.presentation.home.HomeScreen
 import com.example.movies.ui.theme.blue
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,12 +48,12 @@ fun MainScreen() {
         Column(modifier = Modifier.padding(it)) {
             AppNavGraph(
                 navController = navigationState.navController,
-                moviesScreenContent = {
-                    MoviesScreen { movieId ->
+                homeScreenContent = {
+                    HomeScreen { movieId ->
                         navigationState.navigateToFilmScreen(movieId)
                     }
                 },
-                filmScreenContent = {
+                movieScreenContent = {
                     MovieScreen(it)
                 },
                 favoriteMoviesScreenContent = {

@@ -1,4 +1,4 @@
-package com.example.movies.presentation.movie
+package com.example.movies.presentation.home
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +8,7 @@ import com.example.movies.data.repository.MoviesRepository
 import com.example.movies.domain.state.MoviesState
 import kotlinx.coroutines.launch
 
-class MoviesViewModel : ViewModel() {
+class HomeViewModel : ViewModel() {
     private val repository = MoviesRepository
     private val _uiState = MutableLiveData<MoviesState>(MoviesState.Initial)
     val uiState: LiveData<MoviesState> get() = _uiState
@@ -21,7 +21,6 @@ class MoviesViewModel : ViewModel() {
     fun loadMovies() {
         viewModelScope.launch {
             val movies = repository.loadMovies()
-
             _uiState.value = MoviesState.Movies(movies = movies)
         }
     }

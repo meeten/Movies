@@ -1,4 +1,4 @@
-package com.example.movies.presentation.movie
+package com.example.movies.presentation.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -44,8 +44,8 @@ import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
 
 @Composable
-fun MoviesScreen(onMovieClick: (Int) -> Unit) {
-    val viewModel: MoviesViewModel = viewModel()
+fun HomeScreen(onMovieClick: (Int) -> Unit) {
+    val viewModel: HomeViewModel = viewModel()
     val moviesState = viewModel.uiState.observeAsState(MoviesState.Initial).value
 
     when (moviesState) {
@@ -75,7 +75,7 @@ fun MoviesScreen(onMovieClick: (Int) -> Unit) {
 
 @Composable
 fun MoviesContent(
-    viewModel: MoviesViewModel,
+    viewModel: HomeViewModel,
     movies: List<MoviePreview>,
     onMovieClick: (Int) -> Unit,
     isLoadingNextMovies: Boolean,
