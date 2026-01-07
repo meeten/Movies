@@ -1,5 +1,6 @@
 package com.example.movies.data.repository
 
+import android.util.Log
 import com.example.movies.BuildConfig
 import com.example.movies.data.mapper.MovieMapper
 import com.example.movies.data.mapper.MoviesPreviewMapper
@@ -13,6 +14,7 @@ object MoviesRepository {
     private val moviesPreviewMapper = MoviesPreviewMapper()
     private val movieMapper = MovieMapper()
 
+    private val moviesFavorite = mutableListOf<Movie>()
     private val _movies = mutableListOf<MoviePreview>()
     val movies get() = _movies.toList()
 
@@ -40,6 +42,10 @@ object MoviesRepository {
     }
 
     suspend fun loadMovie(id: Int): Movie {
+        moviesFavorite.firstOrNull { it.id == id }?.let {
+            return it
+        }
+
         val movieResponse = apiService.loadMovie(
             id,
             getApiKey()
@@ -47,6 +53,12 @@ object MoviesRepository {
 
         val movie = movieMapper.mapperResponseToMovie(movieResponse)
         return movie
+    }
+
+    fun toggleFavorite(favoriteMovie: Movie) {
+        if (favoriteMovie.isFavorite) {
+            moviesFavorite.add(favoriteMovie)
+        }
     }
 
     private fun getApiKey(): String {

@@ -19,7 +19,7 @@ class MovieMapper {
             year = movieDto.year,
             description = movieDto.description,
             poster = movieDto.posterDto.url,
-            trailers = trailers
+            trailers = if (trailers.size >= 4) trailers.reversed().subList(0, 4) else trailers
         )
 
         return movie

@@ -6,5 +6,6 @@ data class Movie(
     val year: Int,
     val description: String,
     val poster: String,
-    val trailers: List<Trailer>
+    val trailers: List<Trailer>,
+    val isFavorite: Boolean = false
 )

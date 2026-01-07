@@ -26,4 +26,13 @@ class MovieViewModel(private val id: Int) : ViewModel() {
             _uiState.value = MovieState.Movie(movie)
         }
     }
+
+    fun toggleFavorite(isFavorite: Boolean) {
+        val currentState = _uiState.value
+        if (currentState is MovieState.Movie) {
+            val modifiedMovie = currentState.movie.copy(isFavorite = !isFavorite)
+            repository.toggleFavorite(modifiedMovie)
+            _uiState.value = MovieState.Movie(modifiedMovie)
+        }
+    }
 }
