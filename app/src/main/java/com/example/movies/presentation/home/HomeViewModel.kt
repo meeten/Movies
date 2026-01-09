@@ -21,8 +21,12 @@ class HomeViewModel(private val application: Application) : ViewModel() {
 
     fun loadMovies() {
         viewModelScope.launch {
-            val movies = repository.loadMovies()
-            _uiState.value = MoviesState.Movies(movies = movies)
+            try {
+                val movies = repository.loadMovies()
+                _uiState.value = MoviesState.Movies(movies = movies)
+            } catch (e: Exception) {
+                _uiState.value = MoviesState.Error(error = e)
+            }
         }
     }
 

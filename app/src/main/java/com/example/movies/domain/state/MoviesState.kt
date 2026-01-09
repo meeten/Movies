@@ -8,6 +8,8 @@ sealed class MoviesState {
 
     object Loading : MoviesState()
 
+    data class Error(val error: Exception) : MoviesState()
+
     data class Movies(
         val movies: List<BaseMovie>,
         val isLoadingNextMovies: Boolean = false
