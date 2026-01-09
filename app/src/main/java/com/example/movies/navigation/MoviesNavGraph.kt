@@ -8,26 +8,26 @@ import androidx.navigation.navArgument
 import androidx.navigation.navigation
 
 fun NavGraphBuilder.moviesNavGraph(
-    moviesScreenContent: @Composable () -> Unit,
-    filmScreenContent: @Composable (Int) -> Unit,
+    homeScreenContent: @Composable () -> Unit,
+    movieDetailScreenContent: @Composable (Int) -> Unit,
 ) {
     navigation(
         startDestination = Screen.Movies.route,
         route = Screen.Home.route
     ) {
         composable(route = Screen.Movies.route) {
-            moviesScreenContent()
+            homeScreenContent()
         }
 
         composable(
-            route = Screen.Film.route,
-            arguments = listOf(navArgument(Screen.KEY_MOVIE) {
+            route = Screen.MovieDetail.route,
+            arguments = listOf(navArgument(Screen.KEY_MOVIE_DETAIL) {
                 type = NavType.IntType
             })
         ) {
-            val id = it.arguments?.getInt(Screen.KEY_MOVIE) ?: 0
+            val id = it.arguments?.getInt(Screen.KEY_MOVIE_DETAIL) ?: 0
 
-            filmScreenContent(id)
+            movieDetailScreenContent(id)
         }
     }
 }
