@@ -1,20 +1,21 @@
 package com.example.movies.data.repository
 
-import android.util.Log
+import android.app.Application
 import com.example.movies.BuildConfig
+import com.example.movies.data.database.MoviesDatabase
 import com.example.movies.data.mapper.MovieMapper
 import com.example.movies.data.mapper.MoviesPreviewMapper
 import com.example.movies.data.network.ApiFactory
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.model.MoviePreview
 
-object MoviesRepository {
+class MoviesRepository private constructor(val application: Application) {
 
+    private val database = MoviesDatabase.getInstance(application)
     private val apiService = ApiFactory.apiService
     private val moviesPreviewMapper = MoviesPreviewMapper()
     private val movieMapper = MovieMapper()
 
-    private val moviesFavorite = mutableListOf<Movie>()
     private val _movies = mutableListOf<MoviePreview>()
     val movies get() = _movies.toList()
 
@@ -41,8 +42,8 @@ object MoviesRepository {
         return movies
     }
 
-    suspend fun loadMovie(id: Int): Movie {
-        moviesFavorite.firstOrNull { it.id == id }?.let {
+    suspend fun loadMovie(id: Int): MovieDetail {
+        loadFavoriteMovies().firstOrNull { it.id == id }?.let {
             return it
         }
 
@@ -55,13 +56,36 @@ object MoviesRepository {
         return movie
     }
 
-    fun toggleFavorite(favoriteMovie: Movie) {
+
+    suspend fun toggleFavorite(favoriteMovie: MovieDetail) {
         if (favoriteMovie.isFavorite) {
-            moviesFavorite.add(favoriteMovie)
+            database.moviesDao.saveMovie(favoriteMovie)
+        } else {
+            database.moviesDao.deleteMovie(favoriteMovie.id)
         }
+    }
+
+    suspend fun loadFavoriteMovies(): List<MovieDetail> {
+        return database.moviesDao.loadMoviesFavorite()
     }
 
     private fun getApiKey(): String {
         return BuildConfig.API_KEY
+    }
+
+    companion object {
+
+        @Volatile
+        private var instance: MoviesRepository? = null
+
+        fun getInstance(application: Application): MoviesRepository {
+            instance?.let { return it }
+
+            synchronized(this) {
+                instance?.let { return it }
+
+                return MoviesRepository(application).also { instance = it }
+            }
+        }
     }
 }
