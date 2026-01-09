@@ -1,5 +1,8 @@
 package com.example.movies.domain.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 sealed interface BaseMovie {
     val id: Int
     val posterUrl: String
@@ -12,7 +15,9 @@ data class MoviePreview(
     override val rating: String,
 ) : BaseMovie
 
+@Entity(tableName = "tableMovie")
 data class MovieDetail(
+    @PrimaryKey
     override val id: Int,
     override val rating: String,
     override val posterUrl: String,
