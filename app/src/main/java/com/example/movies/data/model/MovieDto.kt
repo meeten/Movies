@@ -8,6 +8,7 @@ data class MovieDto(
     @SerializedName("alternativeName") val alternativeName: String?,
     @SerializedName("year") val year: Int,
     @SerializedName("description") val description: String,
+    @SerializedName("rating") val ratingDto: RatingDto,
     @SerializedName("poster") val posterDto: PosterDto,
     @SerializedName("videos") val videosDto: VideosDto? = null
 )

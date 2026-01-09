@@ -11,8 +11,8 @@ class NavigationState(val navController: NavHostController) {
         navController.navigate(Screen.FavoriteMovies.route)
     }
 
-    fun navigateToFilmScreen(movieId: Int) {
-        navController.navigate(Screen.Film.createRoute(movieId))
+    fun navigateToMovieDetailScreen(movieId: Int) {
+        navController.navigate(Screen.MovieDetail.createRoute(movieId))
     }
 }
 

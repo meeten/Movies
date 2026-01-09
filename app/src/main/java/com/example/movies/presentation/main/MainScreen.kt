@@ -1,5 +1,6 @@
 package com.example.movies.presentation.main
 
+import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -19,13 +20,13 @@ import com.example.movies.R
 import com.example.movies.navigation.AppNavGraph
 import com.example.movies.navigation.rememberNavigationState
 import com.example.movies.presentation.favorite.FavoriteMoviesScreen
-import com.example.movies.presentation.movie.MovieScreen
+import com.example.movies.presentation.movie.MovieDetailScreen
 import com.example.movies.presentation.home.HomeScreen
 import com.example.movies.ui.theme.blue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(application: Application) {
     val navigationState = rememberNavigationState()
 
     Scaffold(topBar = {
@@ -44,21 +45,26 @@ fun MainScreen() {
                 actionIconContentColor = Color.White
             )
         )
-    }) {
-        Column(modifier = Modifier.padding(it)) {
+    }) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
             AppNavGraph(
                 navController = navigationState.navController,
                 homeScreenContent = {
-                    HomeScreen { movieId ->
-                        navigationState.navigateToFilmScreen(movieId)
+                    HomeScreen(application) { movieId ->
+                        navigationState.navigateToMovieDetailScreen(movieId)
                     }
                 },
                 movieScreenContent = {
-                    MovieScreen(it)
+                    MovieDetailScreen(application, it)
                 },
                 favoriteMoviesScreenContent = {
-                    FavoriteMoviesScreen()
+                    FavoriteMoviesScreen(application) { movieId ->
+                        navigationState.navigateToMovieDetailScreen(movieId)
+                    }
                 },
+                favoriteMovieDetailScreenContent = {
+                    MovieDetailScreen(application, it)
+                }
             )
         }
     }
