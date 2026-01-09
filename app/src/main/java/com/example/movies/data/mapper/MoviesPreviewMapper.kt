@@ -12,13 +12,13 @@ class MoviesPreviewMapper {
         val docs = responseDto.moviesDto.docsDto
 
         for (doc in docs) {
-            val movie = doc.movie
+            val movie = doc.moviePreviewDto
             val posterDto = movie.poster ?: continue
 
             val data = MoviePreview(
                 id = movie.id,
                 rating = String.format(Locale.US, "%.1f", movie.rating.kp),
-                previewPoster = posterDto.previewUrl
+                posterUrl = posterDto.previewUrl
             )
 
             result.add(data)
