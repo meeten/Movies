@@ -1,5 +1,6 @@
 package com.example.movies.presentation.home
 
+import android.app.Application
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +42,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import com.example.movies.domain.model.MoviePreview
+import coil.imageLoader
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
 
@@ -117,6 +122,7 @@ fun MovieContent(
     movie: MoviePreview,
     onMovieClick: (Int) -> Unit
 ) {
+    val context = LocalContext.current
     var isLoaded by remember { mutableStateOf(false) }
 
     Card(
@@ -129,9 +135,12 @@ fun MovieContent(
     ) {
         Box {
             AsyncImage(
-                model = movie.previewPoster,
+                model = ImageRequest.Builder(context)
+                    .data(movie.posterUrl)
+                    .diskCachePolicy(CachePolicy.ENABLED)
+                    .build(),
                 contentDescription = null,
-                modifier = Modifier.aspectRatio(2f / 3f),
+                imageLoader = context.imageLoader,
                 onState = {
                     when (it) {
                         AsyncImagePainter.State.Empty -> {}
@@ -142,6 +151,7 @@ fun MovieContent(
                         }
                     }
                 },
+                modifier = Modifier.aspectRatio(2f / 3f),
                 contentScale = ContentScale.FillBounds
             )
 

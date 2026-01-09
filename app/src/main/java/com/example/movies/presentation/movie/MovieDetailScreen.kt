@@ -1,5 +1,6 @@
 package com.example.movies.presentation.movie
 
+import android.app.Application
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,9 @@ import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
+import coil.imageLoader
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.domain.model.Movie
 import com.example.movies.domain.state.MovieState
@@ -83,8 +87,12 @@ fun MovieContent(
                     .fillMaxWidth()
             ) {
                 AsyncImage(
-                    model = movie.poster,
+                    model = ImageRequest.Builder(context)
+                        .data(movie.posterUrl)
+                        .diskCachePolicy(CachePolicy.ENABLED)
+                        .build(),
                     contentDescription = null,
+                    imageLoader = context.imageLoader,
                     onState = {
                         when (it) {
                             AsyncImagePainter.State.Empty -> {}
