@@ -41,14 +41,15 @@ import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.movies.R
-import com.example.movies.domain.model.Movie
+import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.state.MovieState
 import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
 
 @Composable
-fun MovieScreen(id: Int) {
-    val viewModel: MovieViewModel = viewModel(factory = MovieViewModelFactory(id))
+fun MovieDetailScreen(application: Application, id: Int) {
+    val viewModel: MovieDetailViewModel =
+        viewModel(factory = MovieViewModelFactory(application, id))
     val movieState = viewModel.uiState.observeAsState(MoviesState.Initial).value
 
     when (movieState) {
@@ -64,7 +65,7 @@ fun MovieScreen(id: Int) {
         }
 
         is MovieState.Movie -> {
-            MovieContent(
+            MovieDetailContent(
                 viewModel,
                 movieState.movie
             )
@@ -72,10 +73,11 @@ fun MovieScreen(id: Int) {
     }
 }
 
+
 @Composable
-fun MovieContent(
-    viewModel: MovieViewModel,
-    movie: Movie,
+fun MovieDetailContent(
+    viewModel: MovieDetailViewModel,
+    movie: MovieDetail,
 ) {
     val context = LocalContext.current
     var isSuccessLoading by remember { mutableStateOf(false) }
@@ -107,45 +109,49 @@ fun MovieContent(
                     contentScale = ContentScale.Crop
                 )
 
-                IconButton(
-                    onClick = {
-                        viewModel.toggleFavorite(movie.isFavorite)
-                    },
-                    modifier = Modifier
-                        .align(alignment = Alignment.BottomEnd)
-                        .offset(x = (-20).dp, y = 22.dp)
-                ) {
-                    Image(
-                        painter =
-                            if (movie.isFavorite) painterResource(R.drawable.star_yellow)
-                            else painterResource((R.drawable.star_gray)),
-                        contentDescription = null,
-                    )
+                if (isSuccessLoading) {
+                    IconButton(
+                        onClick = {
+                            viewModel.toggleFavorite(movie.isFavorite)
+                        },
+                        modifier = Modifier
+                            .align(alignment = Alignment.BottomEnd)
+                            .offset(x = (-20).dp, y = 22.dp)
+                    ) {
+                        Image(
+                            painter =
+                                if (movie.isFavorite) painterResource(R.drawable.star_yellow)
+                                else painterResource((R.drawable.star_gray)),
+                            contentDescription = null,
+                        )
+                    }
                 }
             }
-
-            Text(
-                text = movie.name,
-                modifier = Modifier.padding(8.dp),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-
-            Text(
-                text = "${movie.year}",
-                modifier = Modifier.padding(8.dp),
-                color = Color.Yellow.copy(green = 0.5f),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp
-            )
-
-            Text(
-                text = movie.description,
-                modifier = Modifier.padding(8.dp)
-            )
         }
 
         if (isSuccessLoading) {
+            item {
+                Text(
+                    text = movie.name,
+                    modifier = Modifier.padding(8.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+
+                Text(
+                    text = "${movie.year}",
+                    modifier = Modifier.padding(8.dp),
+                    color = Color.Yellow.copy(green = 0.5f),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+
+                Text(
+                    text = movie.description,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
             items(items = movie.trailers, key = { it.url }) { trailer ->
                 Button(
                     onClick = {

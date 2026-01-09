@@ -41,16 +41,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
-import com.example.movies.domain.model.MoviePreview
 import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.example.movies.domain.model.BaseMovie
 import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
 
 @Composable
-fun HomeScreen(onMovieClick: (Int) -> Unit) {
-    val viewModel: HomeViewModel = viewModel()
+fun HomeScreen(application: Application, onMovieClick: (Int) -> Unit) {
+    val viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(application))
     val moviesState = viewModel.uiState.observeAsState(MoviesState.Initial).value
 
     when (moviesState) {
@@ -67,6 +67,14 @@ fun HomeScreen(onMovieClick: (Int) -> Unit) {
             }
         }
 
+        is MoviesState.Error -> {
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = moviesState.error.message.toString())
+            }
+        }
+
         is MoviesState.Movies -> {
             MoviesContent(
                 viewModel = viewModel,
@@ -80,10 +88,10 @@ fun HomeScreen(onMovieClick: (Int) -> Unit) {
 
 @Composable
 fun MoviesContent(
-    viewModel: HomeViewModel,
-    movies: List<MoviePreview>,
+    viewModel: HomeViewModel? = null,
+    movies: List<BaseMovie>,
     onMovieClick: (Int) -> Unit,
-    isLoadingNextMovies: Boolean,
+    isLoadingNextMovies: Boolean? = null,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -96,7 +104,7 @@ fun MoviesContent(
         }
 
         item(span = { GridItemSpan(2) }) {
-            if (isLoadingNextMovies) {
+            if (isLoadingNextMovies ?: false) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -110,7 +118,7 @@ fun MoviesContent(
                 }
             } else {
                 SideEffect {
-                    viewModel.loadNextMovies()
+                    viewModel?.loadNextMovies()
                 }
             }
         }
@@ -119,7 +127,7 @@ fun MoviesContent(
 
 @Composable
 fun MovieContent(
-    movie: MoviePreview,
+    movie: BaseMovie,
     onMovieClick: (Int) -> Unit
 ) {
     val context = LocalContext.current
