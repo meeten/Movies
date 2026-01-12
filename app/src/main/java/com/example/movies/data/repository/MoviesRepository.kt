@@ -58,15 +58,24 @@ class MoviesRepository private constructor(val application: Application) {
         initialValue = movies
     )
 
+    val loadedFavoriteMovies = flow {
+        emit(database.moviesDao.loadMoviesFavorite())
+    }
+
     suspend fun loadNextMovies() {
         nextMoviesNeededEvents.emit(Unit)
     }
 
     fun loadMovie(id: Int) = flow {
-        favoriteMovies.firstOrNull { it.id == id }?.let {
-            emit(it)
-            return@flow
+        var isLoadedFavorites = false
+        loadedFavoriteMovies.collect {
+            it.firstOrNull { it.id == id }?.let { movieDetail ->
+                emit(movieDetail)
+                isLoadedFavorites = true
+            }
         }
+
+        if (isLoadedFavorites) return@flow
 
         val movieResponse = apiService.loadMovie(
             id,
@@ -77,7 +86,7 @@ class MoviesRepository private constructor(val application: Application) {
         emit(movie)
     }.stateIn(
         scope = coroutineScope,
-        started = SharingStarted.Eagerly,
+        started = SharingStarted.Lazily,
         initialValue = null
     )
 
@@ -87,11 +96,6 @@ class MoviesRepository private constructor(val application: Application) {
         } else {
             database.moviesDao.deleteMovie(favoriteMovie.id)
         }
-    }
-
-    fun loadFavoriteMovies() = flow {
-        favoriteMovies.addAll(database.moviesDao.loadMoviesFavorite())
-        emit(favoriteMovies.toList())
     }
 
     private fun getApiKey(): String {
