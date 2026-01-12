@@ -43,31 +43,38 @@ import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.state.MovieState
+import com.example.movies.presentation.topBars.MovieTopBar
 import com.example.movies.ui.theme.blue
 
 @Composable
-fun MovieDetailScreen(application: Application, id: Int) {
+fun MovieDetailScreen(
+    application: Application,
+    id: Int,
+    onBackClick: () -> Unit
+) {
     val viewModel: MovieDetailViewModel =
         viewModel(factory = MovieViewModelFactory(application, id))
     val movieState = viewModel.uiState.collectAsState(MovieState.Initial).value
 
-    when (movieState) {
-        MovieState.Initial -> {}
+    MovieTopBar(onBackClick) {
+        when (movieState) {
+            MovieState.Initial -> {}
 
-        MovieState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = blue)
+            MovieState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = blue)
+                }
             }
-        }
 
-        is MovieState.Movie -> {
-            MovieDetailContent(
-                viewModel,
-                movieState.movie
-            )
+            is MovieState.Movie -> {
+                MovieDetailContent(
+                    viewModel,
+                    movieState.movie
+                )
+            }
         }
     }
 }

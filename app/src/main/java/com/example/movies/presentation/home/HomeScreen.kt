@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,42 +47,51 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.movies.domain.model.BaseMovie
 import com.example.movies.domain.state.MoviesState
+import com.example.movies.presentation.topBars.HomeTopBar
 import com.example.movies.ui.theme.blue
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(application: Application, onMovieClick: (Int) -> Unit) {
+fun HomeScreen(
+    application: Application,
+    onMoreVertClick: () -> Unit,
+    onMovieClick: (Int) -> Unit,
+) {
     val viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(application))
     val moviesState = viewModel.uiState.collectAsState(MoviesState.Initial).value
 
-    when (moviesState) {
-        is MoviesState.Initial -> {}
 
-        is MoviesState.Loading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    color = blue
+    HomeTopBar(onMoreVertClick = onMoreVertClick) {
+        when (moviesState) {
+            is MoviesState.Initial -> {}
+
+            is MoviesState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = blue
+                    )
+                }
+            }
+
+            is MoviesState.Error -> {
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(text = moviesState.error.message.toString())
+                }
+            }
+
+            is MoviesState.Movies -> {
+                MoviesContent(
+                    viewModel = viewModel,
+                    movies = moviesState.movies,
+                    onMovieClick = onMovieClick,
+                    isLoadingNextMovies = moviesState.isLoadingNextMovies
                 )
             }
-        }
-
-        is MoviesState.Error -> {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = moviesState.error.message.toString())
-            }
-        }
-
-        is MoviesState.Movies -> {
-            MoviesContent(
-                viewModel = viewModel,
-                movies = moviesState.movies,
-                onMovieClick = onMovieClick,
-                isLoadingNextMovies = moviesState.isLoadingNextMovies
-            )
         }
     }
 }
