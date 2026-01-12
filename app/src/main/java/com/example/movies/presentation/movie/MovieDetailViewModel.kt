@@ -22,9 +22,8 @@ class MovieDetailViewModel(
     private val refreshMovieFlow = MutableSharedFlow<MovieState>()
 
     val uiState = movieFlow
-        .filter { it != null }
-        .map { it?.let { movie -> MovieState.Movie(movie) as MovieState } }
-        .onStart { MovieState.Loading }
+        .map { it?.let { movie -> MovieState.Movie(movie) as MovieState } ?: MovieState.Loading }
+        .onStart { emit(MovieState.Loading) }
         .mergeWith(refreshMovieFlow)
 
     fun toggleFavorite(isFavorite: Boolean) {

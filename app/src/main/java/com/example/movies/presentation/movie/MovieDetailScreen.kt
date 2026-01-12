@@ -43,14 +43,13 @@ import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.state.MovieState
-import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
 
 @Composable
 fun MovieDetailScreen(application: Application, id: Int) {
     val viewModel: MovieDetailViewModel =
         viewModel(factory = MovieViewModelFactory(application, id))
-    val movieState = viewModel.uiState.collectAsState(MoviesState.Initial).value
+    val movieState = viewModel.uiState.collectAsState(MovieState.Initial).value
 
     when (movieState) {
         MovieState.Initial -> {}

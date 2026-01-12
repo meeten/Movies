@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.onStart
 class FavoriteMoviesViewModel(application: Application) : ViewModel() {
 
     val repository = MoviesRepository.getInstance(application)
-    val uiState = repository.loadFavoriteMovies()
+    val uiState = repository.loadedFavoriteMovies
         .map { FavoriteMoviesState.FavoriteMovies(it) as FavoriteMoviesState }
-        .onStart { FavoriteMoviesState.Loading }
+        .onStart { emit(FavoriteMoviesState.Loading) }
 }

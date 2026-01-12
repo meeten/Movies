@@ -32,7 +32,7 @@ class HomeViewModel(application: Application) : ViewModel() {
     val uiState = moviesStateFlow
         .filter { it.isNotEmpty() }
         .map { MoviesState.Movies(it) as MoviesState }
-        .onStart { MoviesState.Loading }
+        .onStart { emit(MoviesState.Loading) }
         .mergeWith(nextMoviesFlow)
 
     fun loadNextMovies() {
