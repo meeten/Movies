@@ -21,13 +21,12 @@ class MoviesRepository private constructor(val application: Application) {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val nextMoviesNeededEvents =
         MutableSharedFlow<Unit>(replay = 1)
-
     private val apiService = ApiFactory.apiService
     private val moviesPreviewMapper = MoviesPreviewMapper()
     private val movieMapper = MovieMapper()
 
-    private val movies = mutableListOf<MoviePreview>()
-    private val favoriteMovies = mutableListOf<MovieDetail>()
+    private val _movies = mutableListOf<MoviePreview>()
+    private val movies: List<MoviePreview> get() = _movies.toList()
 
     private var nextFrom: String? = null
     val loadedMovies = flow {
@@ -35,8 +34,8 @@ class MoviesRepository private constructor(val application: Application) {
         nextMoviesNeededEvents.collect {
             val startFrom = nextFrom
 
-            if (startFrom == null && movies.isNotEmpty()) {
-                emit(movies.toList())
+            if (startFrom == null && _movies.isNotEmpty()) {
+                emit(movies)
                 return@collect
             }
 
@@ -50,9 +49,8 @@ class MoviesRepository private constructor(val application: Application) {
                 moviesResponse.moviesDto.hasNext
             }
 
-            movies.addAll(moviesPreviewMapper.mapResponseToMovies(moviesResponse))
-
-            emit(movies.toList())
+            _movies.addAll(moviesPreviewMapper.mapResponseToMovies(moviesResponse))
+            emit(movies)
         }
     }.stateIn(
         scope = coroutineScope,
