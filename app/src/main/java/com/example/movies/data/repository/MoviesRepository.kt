@@ -8,6 +8,12 @@ import com.example.movies.data.mapper.MoviesPreviewMapper
 import com.example.movies.data.network.ApiFactory
 import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.model.MoviePreview
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 
 class MoviesRepository private constructor(val application: Application) {
 
@@ -57,9 +63,10 @@ class MoviesRepository private constructor(val application: Application) {
         nextMoviesNeededEvents.emit(Unit)
     }
 
-    suspend fun loadMovie(id: Int): MovieDetail {
+    fun loadMovie(id: Int) = flow {
         loadFavoriteMovies().firstOrNull { it.id == id }?.let {
-            return it
+            emit(it)
+            return@flow
         }
 
         val movieResponse = apiService.loadMovie(
@@ -68,9 +75,12 @@ class MoviesRepository private constructor(val application: Application) {
         )
 
         val movie = movieMapper.mapperResponseToMovie(movieResponse)
-        return movie
-    }
-
+        emit(movie)
+    }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.Eagerly,
+        initialValue = null
+    )
 
     suspend fun toggleFavorite(favoriteMovie: MovieDetail) {
         if (favoriteMovie.isFavorite) {
