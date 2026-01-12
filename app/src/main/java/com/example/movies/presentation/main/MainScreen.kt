@@ -1,71 +1,49 @@
 package com.example.movies.presentation.main
 
 import android.app.Application
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import com.example.movies.R
 import com.example.movies.navigation.AppNavGraph
 import com.example.movies.navigation.rememberNavigationState
 import com.example.movies.presentation.favorite.FavoriteMoviesScreen
-import com.example.movies.presentation.movie.MovieDetailScreen
 import com.example.movies.presentation.home.HomeScreen
-import com.example.movies.ui.theme.blue
+import com.example.movies.presentation.movie.MovieDetailScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(application: Application) {
     val navigationState = rememberNavigationState()
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = { Text(text = stringResource(R.string.app_name)) },
-            actions = {
-                IconButton(onClick = {
+    AppNavGraph(
+        navController = navigationState.navController,
+        homeScreenContent = {
+            HomeScreen(
+                application = application,
+                onMoreVertClick = {
                     navigationState.navigateToFavoriteMoviesScreen()
-                }) {
-                    Icon(imageVector = Icons.Default.MoreVert, contentDescription = null)
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = blue,
-                titleContentColor = Color.White,
-                actionIconContentColor = Color.White
-            )
-        )
-    }) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
-            AppNavGraph(
-                navController = navigationState.navController,
-                homeScreenContent = {
-                    HomeScreen(application) { movieId ->
-                        navigationState.navigateToMovieDetailScreen(movieId)
-                    }
                 },
-                movieScreenContent = {
-                    MovieDetailScreen(application, it)
+                onMovieClick = { movieId ->
+                    navigationState.navigateToMovieDetailScreen(movieId)
+                })
+        },
+        movieScreenContent = {
+            MovieDetailScreen(application, it) {
+                navigationState.navController.popBackStack()
+            }
+        },
+        favoriteMoviesScreenContent = {
+            FavoriteMoviesScreen(
+                application,
+                onBackClick = {
+                    navigationState.navController.popBackStack()
                 },
-                favoriteMoviesScreenContent = {
-                    FavoriteMoviesScreen(application) { movieId ->
-                        navigationState.navigateToMovieDetailScreen(movieId)
-                    }
-                },
-                favoriteMovieDetailScreenContent = {
-                    MovieDetailScreen(application, it)
+                onMovieClick = { movieId ->
+                    navigationState.navigateToMovieDetailScreen(movieId)
                 }
             )
+        },
+        favoriteMovieDetailScreenContent = {
+            MovieDetailScreen(application, it) {
+                navigationState.navController.popBackStack()
+            }
         }
-    }
+    )
 }
