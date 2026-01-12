@@ -19,8 +19,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,14 +43,13 @@ import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.state.MovieState
-import com.example.movies.domain.state.MoviesState
 import com.example.movies.ui.theme.blue
 
 @Composable
 fun MovieDetailScreen(application: Application, id: Int) {
     val viewModel: MovieDetailViewModel =
         viewModel(factory = MovieViewModelFactory(application, id))
-    val movieState = viewModel.uiState.observeAsState(MoviesState.Initial).value
+    val movieState = viewModel.uiState.collectAsState(MovieState.Initial).value
 
     when (movieState) {
         MovieState.Initial -> {}

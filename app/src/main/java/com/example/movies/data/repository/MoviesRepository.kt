@@ -8,44 +8,74 @@ import com.example.movies.data.mapper.MoviesPreviewMapper
 import com.example.movies.data.network.ApiFactory
 import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.model.MoviePreview
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 
 class MoviesRepository private constructor(val application: Application) {
 
     private val database = MoviesDatabase.getInstance(application)
+    private val coroutineScope = CoroutineScope(Dispatchers.Default)
+    private val nextMoviesNeededEvents =
+        MutableSharedFlow<Unit>(replay = 1)
     private val apiService = ApiFactory.apiService
     private val moviesPreviewMapper = MoviesPreviewMapper()
     private val movieMapper = MovieMapper()
 
     private val _movies = mutableListOf<MoviePreview>()
-    val movies get() = _movies.toList()
+    private val movies: List<MoviePreview> get() = _movies.toList()
 
     private var nextFrom: String? = null
-    suspend fun loadMovies(): List<MoviePreview> {
-        val startFrom = nextFrom
+    val loadedMovies = flow {
+        nextMoviesNeededEvents.emit(Unit)
+        nextMoviesNeededEvents.collect {
+            val startFrom = nextFrom
 
-        if (startFrom == null && movies.isNotEmpty()) {
-            return movies
+            if (startFrom == null && _movies.isNotEmpty()) {
+                emit(movies)
+                return@collect
+            }
+
+            val moviesResponse = if (startFrom == null) {
+                apiService.loadMovies(getApiKey())
+            } else {
+                apiService.loadNextMovies(startFrom, getApiKey())
+            }
+
+            nextFrom = moviesResponse.moviesDto.next.takeIf {
+                moviesResponse.moviesDto.hasNext
+            }
+
+            _movies.addAll(moviesPreviewMapper.mapResponseToMovies(moviesResponse))
+            emit(movies)
         }
+    }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.Lazily,
+        initialValue = movies
+    )
 
-        val moviesResponse = if (startFrom == null) {
-            apiService.loadMovies(getApiKey())
-        } else {
-            apiService.loadNextMovies(startFrom, getApiKey())
-        }
-
-        nextFrom = moviesResponse.moviesDto.next.takeIf {
-            moviesResponse.moviesDto.hasNext
-        }
-
-        _movies.addAll(moviesPreviewMapper.mapResponseToMovies(moviesResponse))
-
-        return movies
+    val loadedFavoriteMovies = flow {
+        emit(database.moviesDao.loadMoviesFavorite())
     }
 
-    suspend fun loadMovie(id: Int): MovieDetail {
-        loadFavoriteMovies().firstOrNull { it.id == id }?.let {
-            return it
+    suspend fun loadNextMovies() {
+        nextMoviesNeededEvents.emit(Unit)
+    }
+
+    fun loadMovie(id: Int) = flow {
+        var isLoadedFavorites = false
+        loadedFavoriteMovies.collect {
+            it.firstOrNull { it.id == id }?.let { movieDetail ->
+                emit(movieDetail)
+                isLoadedFavorites = true
+            }
         }
+
+        if (isLoadedFavorites) return@flow
 
         val movieResponse = apiService.loadMovie(
             id,
@@ -53,9 +83,12 @@ class MoviesRepository private constructor(val application: Application) {
         )
 
         val movie = movieMapper.mapperResponseToMovie(movieResponse)
-        return movie
-    }
-
+        emit(movie)
+    }.stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.Lazily,
+        initialValue = null
+    )
 
     suspend fun toggleFavorite(favoriteMovie: MovieDetail) {
         if (favoriteMovie.isFavorite) {
@@ -63,10 +96,6 @@ class MoviesRepository private constructor(val application: Application) {
         } else {
             database.moviesDao.deleteMovie(favoriteMovie.id)
         }
-    }
-
-    suspend fun loadFavoriteMovies(): List<MovieDetail> {
-        return database.moviesDao.loadMoviesFavorite()
     }
 
     private fun getApiKey(): String {
