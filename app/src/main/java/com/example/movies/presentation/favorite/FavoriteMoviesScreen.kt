@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.movies.domain.state.FavoriteMoviesState
@@ -20,11 +20,12 @@ fun FavoriteMoviesScreen(
     val viewModel: FavoriteMoviesViewModel =
         viewModel(factory = FavoriteMoviesViewModelFactory(application))
     val favoriteMoviesState =
-        viewModel.uiState.observeAsState(FavoriteMoviesState.Initial).value
+        viewModel.uiState.collectAsState(FavoriteMoviesState.Initial).value
 
 
     when (favoriteMoviesState) {
-        FavoriteMoviesState.Initial -> {}
+        FavoriteMoviesState.Initial -> {
+        }
 
         FavoriteMoviesState.Loading -> {
             Box(modifier = Modifier.fillMaxSize()) {

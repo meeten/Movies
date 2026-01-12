@@ -27,6 +27,7 @@ class MoviesRepository private constructor(val application: Application) {
     private val movieMapper = MovieMapper()
 
     private val movies = mutableListOf<MoviePreview>()
+    private val favoriteMovies = mutableListOf<MovieDetail>()
 
     private var nextFrom: String? = null
     val loadedMovies = flow {
@@ -64,7 +65,7 @@ class MoviesRepository private constructor(val application: Application) {
     }
 
     fun loadMovie(id: Int) = flow {
-        loadFavoriteMovies().firstOrNull { it.id == id }?.let {
+        favoriteMovies.firstOrNull { it.id == id }?.let {
             emit(it)
             return@flow
         }
@@ -90,8 +91,9 @@ class MoviesRepository private constructor(val application: Application) {
         }
     }
 
-    suspend fun loadFavoriteMovies(): List<MovieDetail> {
-        return database.moviesDao.loadMoviesFavorite()
+    fun loadFavoriteMovies() = flow {
+        favoriteMovies.addAll(database.moviesDao.loadMoviesFavorite())
+        emit(favoriteMovies.toList())
     }
 
     private fun getApiKey(): String {
