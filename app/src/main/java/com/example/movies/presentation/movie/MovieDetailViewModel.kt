@@ -7,7 +7,6 @@ import com.example.movies.data.repository.MoviesRepository
 import com.example.movies.domain.state.MovieState
 import com.example.movies.extensions.mergeWith
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -31,7 +30,7 @@ class MovieDetailViewModel(
             movieFlow.value?.let { movieDetail ->
                 val modifiedMovie = movieDetail.copy(isFavorite = !isFavorite)
                 repository.toggleFavorite(modifiedMovie)
-                refreshMovieFlow.emit(MovieState.Movie(movieDetail))
+                refreshMovieFlow.emit(MovieState.Movie(modifiedMovie))
             }
         }
     }
