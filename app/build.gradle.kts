@@ -90,4 +90,8 @@ dependencies {
 
     //livedata
     implementation(libs.androidx.compose.runtime.livedata)
+
+    //dagger
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
 }
