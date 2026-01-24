@@ -1,9 +1,9 @@
 package com.example.movies.presentation.home
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies.data.repository.MoviesRepository
+import com.example.movies.domain.DataUseCase
+import com.example.movies.domain.LoadNextMoviesUseCase
 import com.example.movies.domain.state.MoviesState
 import com.example.movies.extensions.mergeWith
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,11 +12,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel(application: Application) : ViewModel() {
+class HomeViewModel @Inject constructor(
+    dataUseCase: DataUseCase,
+    private val loadNextMoviesUseCase: LoadNextMoviesUseCase
+) : ViewModel() {
 
-    private val repository = MoviesRepository.getInstance(application)
-    private val moviesStateFlow = repository.loadedMovies
+    private val moviesStateFlow = dataUseCase()
     private val nextMoviesNeededEvents = MutableSharedFlow<Unit>()
     private val nextMoviesFlow = flow {
         nextMoviesNeededEvents.collect {
@@ -38,7 +41,7 @@ class HomeViewModel(application: Application) : ViewModel() {
     fun loadNextMovies() {
         viewModelScope.launch {
             nextMoviesNeededEvents.emit(Unit)
-            repository.loadNextMovies()
+            loadNextMoviesUseCase()
         }
     }
 }
