@@ -5,8 +5,13 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import com.example.movies.di.DaggerAppComponent
 
 class MovieApp : Application(), ImageLoaderFactory {
+
+    val component = DaggerAppComponent.factory()
+        .create(this)
+
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .diskCache {

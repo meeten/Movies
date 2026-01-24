@@ -1,6 +1,5 @@
 package com.example.movies.presentation.movie
 
-import android.app.Application
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -41,6 +40,7 @@ import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.movies.R
+import com.example.movies.di.LocalAppComponent
 import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.state.MovieState
 import com.example.movies.presentation.topBars.MovieTopBar
@@ -48,12 +48,16 @@ import com.example.movies.ui.theme.blue
 
 @Composable
 fun MovieDetailScreen(
-    application: Application,
     id: Int,
     onBackClick: () -> Unit
 ) {
+    val appComponent = LocalAppComponent.current
+    val movieDetailComponent = remember(id) {
+        appComponent.movieDetailComponentFactory().create(id)
+    }
+
     val viewModel: MovieDetailViewModel =
-        viewModel(factory = MovieViewModelFactory(application, id))
+        viewModel(factory = movieDetailComponent.movieDetailViewModelFactory())
     val movieState = viewModel.uiState.collectAsState(MovieState.Initial).value
 
     MovieTopBar(onBackClick) {

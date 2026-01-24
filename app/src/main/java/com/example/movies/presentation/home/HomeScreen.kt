@@ -1,6 +1,5 @@
 package com.example.movies.presentation.home
 
-import android.app.Application
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,6 +44,7 @@ import coil.compose.AsyncImagePainter
 import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.example.movies.di.LocalViewModelFactory
 import com.example.movies.domain.model.BaseMovie
 import com.example.movies.domain.state.MoviesState
 import com.example.movies.presentation.topBars.HomeTopBar
@@ -53,11 +53,11 @@ import com.example.movies.ui.theme.blue
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    application: Application,
     onMoreVertClick: () -> Unit,
     onMovieClick: (Int) -> Unit,
 ) {
-    val viewModel: HomeViewModel = viewModel(factory = HomeViewModelFactory(application))
+    val viewModelFactory = LocalViewModelFactory.current
+    val viewModel: HomeViewModel = viewModel(factory = viewModelFactory)
     val moviesState = viewModel.uiState.collectAsState(MoviesState.Initial).value
 
 

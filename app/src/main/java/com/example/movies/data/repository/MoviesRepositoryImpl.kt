@@ -1,35 +1,34 @@
 package com.example.movies.data.repository
 
-import android.app.Application
-import com.example.movies.BuildConfig
-import com.example.movies.data.database.MoviesDatabase
+import android.util.Log
+import com.example.movies.data.database.dao.MoviesDao
 import com.example.movies.data.mapper.MovieMapper
-import com.example.movies.data.mapper.MoviesPreviewMapper
-import com.example.movies.data.network.ApiFactory
+import com.example.movies.data.network.ApiService
+import com.example.movies.domain.MoviesRepository
 import com.example.movies.domain.model.MovieDetail
 import com.example.movies.domain.model.MoviePreview
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class MoviesRepository private constructor(val application: Application) {
+class MoviesRepositoryImpl @Inject constructor(
+    private val mapper: MovieMapper,
+    private val moviesDao: MoviesDao,
+    private val apiService: ApiService
+) : MoviesRepository {
 
-    private val database = MoviesDatabase.getInstance(application)
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
     private val nextMoviesNeededEvents =
         MutableSharedFlow<Unit>(replay = 1)
-    private val apiService = ApiFactory.apiService
-    private val moviesPreviewMapper = MoviesPreviewMapper()
-    private val movieMapper = MovieMapper()
-
-    private val _movies = mutableListOf<MoviePreview>()
-    private val movies: List<MoviePreview> get() = _movies.toList()
 
     private var nextFrom: String? = null
-    val loadedMovies = flow {
+    private val loadedMovies = flow {
         nextMoviesNeededEvents.emit(Unit)
         nextMoviesNeededEvents.collect {
             val startFrom = nextFrom
@@ -49,26 +48,36 @@ class MoviesRepository private constructor(val application: Application) {
                 moviesResponse.moviesDto.hasNext
             }
 
-            _movies.addAll(moviesPreviewMapper.mapResponseToMovies(moviesResponse))
+            _movies.addAll(mapper.mapResponseToMovies(moviesResponse))
             emit(movies)
         }
-    }.stateIn(
+    }.retry(2) {
+        RETRY_TIMEOUT_MILLS
+        true
+    }.catch {
+        Log.d("MoviesRepository", it.message.toString())
+    }
+
+    private val _movies = mutableListOf<MoviePreview>()
+    private val movies: List<MoviePreview> get() = _movies.toList()
+
+    override val data = loadedMovies.stateIn(
         scope = coroutineScope,
         started = SharingStarted.Lazily,
         initialValue = movies
     )
 
-    val loadedFavoriteMovies = flow {
-        emit(database.moviesDao.loadMoviesFavorite())
+    override val loadedFavorites = flow {
+        emit(moviesDao.loadMoviesFavorite())
     }
 
-    suspend fun loadNextMovies() {
+    override suspend fun loadNextMovies() {
         nextMoviesNeededEvents.emit(Unit)
     }
 
-    fun loadMovie(id: Int) = flow {
+    override fun loadMovie(id: Int) = flow {
         var isLoadedFavorites = false
-        loadedFavoriteMovies.collect {
+        loadedFavorites.collect {
             it.firstOrNull { it.id == id }?.let { movieDetail ->
                 emit(movieDetail)
                 isLoadedFavorites = true
@@ -82,7 +91,7 @@ class MoviesRepository private constructor(val application: Application) {
             getApiKey()
         )
 
-        val movie = movieMapper.mapperResponseToMovie(movieResponse)
+        val movie = mapper.mapperResponseToMovie(movieResponse)
         emit(movie)
     }.stateIn(
         scope = coroutineScope,
@@ -90,31 +99,15 @@ class MoviesRepository private constructor(val application: Application) {
         initialValue = null
     )
 
-    suspend fun toggleFavorite(favoriteMovie: MovieDetail) {
+    override suspend fun toggleFavorite(favoriteMovie: MovieDetail) {
         if (favoriteMovie.isFavorite) {
-            database.moviesDao.saveMovie(favoriteMovie)
+            moviesDao.saveMovie(favoriteMovie)
         } else {
-            database.moviesDao.deleteMovie(favoriteMovie.id)
+            moviesDao.deleteMovie(favoriteMovie.id)
         }
-    }
-
-    private fun getApiKey(): String {
-        return BuildConfig.API_KEY
     }
 
     companion object {
-
-        @Volatile
-        private var instance: MoviesRepository? = null
-
-        fun getInstance(application: Application): MoviesRepository {
-            instance?.let { return it }
-
-            synchronized(this) {
-                instance?.let { return it }
-
-                return MoviesRepository(application).also { instance = it }
-            }
-        }
+        private const val RETRY_TIMEOUT_MILLS = 3000L
     }
 }

@@ -1,11 +1,15 @@
 package com.example.movies.data.mapper
 
 import com.example.movies.data.model.MovieDto
+import com.example.movies.data.model.MoviesResponseDto
 import com.example.movies.domain.model.MovieDetail
+import com.example.movies.domain.model.MoviePreview
 import com.example.movies.domain.model.Trailer
 import java.util.Locale
+import javax.inject.Inject
 
-class MovieMapper {
+class MovieMapper @Inject constructor() {
+
     fun mapperResponseToMovie(movieDto: MovieDto): MovieDetail {
         val trailers = movieDto.videosDto?.trailers?.map {
             Trailer(
@@ -25,5 +29,26 @@ class MovieMapper {
         )
 
         return movie
+    }
+
+    fun mapResponseToMovies(responseDto: MoviesResponseDto): List<MoviePreview> {
+        val result = mutableListOf<MoviePreview>()
+
+        val docs = responseDto.moviesDto.docsDto
+
+        for (doc in docs) {
+            val movie = doc.moviePreviewDto
+            val posterDto = movie.poster ?: continue
+
+            val data = MoviePreview(
+                id = movie.id,
+                rating = String.format(Locale.US, "%.1f", movie.rating.kp),
+                posterUrl = posterDto.previewUrl
+            )
+
+            result.add(data)
+        }
+
+        return result
     }
 }

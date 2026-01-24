@@ -1,6 +1,5 @@
 package com.example.movies.presentation.main
 
-import android.app.Application
 import androidx.compose.runtime.Composable
 import com.example.movies.navigation.AppNavGraph
 import com.example.movies.navigation.rememberNavigationState
@@ -9,14 +8,13 @@ import com.example.movies.presentation.home.HomeScreen
 import com.example.movies.presentation.movie.MovieDetailScreen
 
 @Composable
-fun MainScreen(application: Application) {
+fun MainScreen() {
     val navigationState = rememberNavigationState()
 
     AppNavGraph(
         navController = navigationState.navController,
         homeScreenContent = {
             HomeScreen(
-                application = application,
                 onMoreVertClick = {
                     navigationState.navigateToFavoriteMoviesScreen()
                 },
@@ -25,13 +23,12 @@ fun MainScreen(application: Application) {
                 })
         },
         movieScreenContent = {
-            MovieDetailScreen(application, it) {
+            MovieDetailScreen(it) {
                 navigationState.navController.popBackStack()
             }
         },
         favoriteMoviesScreenContent = {
             FavoriteMoviesScreen(
-                application,
                 onBackClick = {
                     navigationState.navController.popBackStack()
                 },
@@ -41,7 +38,7 @@ fun MainScreen(application: Application) {
             )
         },
         favoriteMovieDetailScreenContent = {
-            MovieDetailScreen(application, it) {
+            MovieDetailScreen(it) {
                 navigationState.navController.popBackStack()
             }
         }
