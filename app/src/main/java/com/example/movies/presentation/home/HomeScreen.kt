@@ -45,7 +45,7 @@ import coil.imageLoader
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.movies.di.LocalViewModelFactory
-import com.example.movies.domain.model.BaseMovie
+import com.example.movies.domain.entity.BaseMovie
 import com.example.movies.presentation.topBars.HomeTopBar
 import com.example.movies.ui.theme.blue
 

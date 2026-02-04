@@ -2,9 +2,9 @@ package com.example.movies.data.mapper
 
 import com.example.movies.data.model.MovieDto
 import com.example.movies.data.model.MoviesResponseDto
-import com.example.movies.domain.model.MovieDetail
-import com.example.movies.domain.model.MoviePreview
-import com.example.movies.domain.model.Trailer
+import com.example.movies.domain.entity.MovieDetail
+import com.example.movies.domain.entity.MoviePreview
+import com.example.movies.domain.entity.Trailer
 import java.util.Locale
 import javax.inject.Inject
 

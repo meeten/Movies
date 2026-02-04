@@ -1,7 +1,7 @@
 package com.example.movies.data.database
 
 import androidx.room.TypeConverter
-import com.example.movies.domain.model.Trailer
+import com.example.movies.domain.entity.Trailer
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 

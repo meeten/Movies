@@ -1,7 +1,7 @@
 package com.example.movies.presentation.favorite
 
 import androidx.lifecycle.ViewModel
-import com.example.movies.domain.LoadedFavoritesUseCase
+import com.example.movies.domain.usecases.LoadedFavoritesUseCase
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject

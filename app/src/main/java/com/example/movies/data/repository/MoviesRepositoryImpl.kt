@@ -4,9 +4,9 @@ import android.util.Log
 import com.example.movies.data.database.dao.MoviesDao
 import com.example.movies.data.mapper.MovieMapper
 import com.example.movies.data.network.ApiService
-import com.example.movies.domain.MoviesRepository
-import com.example.movies.domain.model.MovieDetail
-import com.example.movies.domain.model.MoviePreview
+import com.example.movies.domain.repository.MoviesRepository
+import com.example.movies.domain.entity.MovieDetail
+import com.example.movies.domain.entity.MoviePreview
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

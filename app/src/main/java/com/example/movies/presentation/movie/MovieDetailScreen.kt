@@ -41,7 +41,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.di.LocalAppComponent
-import com.example.movies.domain.model.MovieDetail
+import com.example.movies.domain.entity.MovieDetail
 import com.example.movies.presentation.topBars.MovieTopBar
 import com.example.movies.ui.theme.blue
 

@@ -1,6 +1,7 @@
-package com.example.movies.domain
+package com.example.movies.domain.usecases
 
-import com.example.movies.domain.model.MovieDetail
+import com.example.movies.domain.repository.MoviesRepository
+import com.example.movies.domain.entity.MovieDetail
 import javax.inject.Inject
 
 class ToggleFavoriteUseCase @Inject constructor(private val repository: MoviesRepository) {

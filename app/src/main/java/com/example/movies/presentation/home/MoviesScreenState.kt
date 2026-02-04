@@ -1,6 +1,6 @@
 package com.example.movies.presentation.home
 
-import com.example.movies.domain.model.BaseMovie
+import com.example.movies.domain.entity.BaseMovie
 
 sealed class MoviesScreenState {
 

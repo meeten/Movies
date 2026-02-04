@@ -1,6 +1,6 @@
 package com.example.movies.presentation.movie
 
-import com.example.movies.domain.model.MovieDetail
+import com.example.movies.domain.entity.MovieDetail
 
 sealed class MovieScreenState {
     object Initial : MovieScreenState()

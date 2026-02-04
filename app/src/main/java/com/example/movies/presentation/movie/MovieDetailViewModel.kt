@@ -2,8 +2,8 @@ package com.example.movies.presentation.movie
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies.domain.LoadMovieUseCase
-import com.example.movies.domain.ToggleFavoriteUseCase
+import com.example.movies.domain.usecases.LoadMovieUseCase
+import com.example.movies.domain.usecases.ToggleFavoriteUseCase
 import com.example.movies.extensions.mergeWith
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map

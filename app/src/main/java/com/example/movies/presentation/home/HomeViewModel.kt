@@ -2,8 +2,8 @@ package com.example.movies.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies.domain.DataUseCase
-import com.example.movies.domain.LoadNextMoviesUseCase
+import com.example.movies.domain.usecases.DataUseCase
+import com.example.movies.domain.usecases.LoadNextMoviesUseCase
 import com.example.movies.extensions.mergeWith
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter

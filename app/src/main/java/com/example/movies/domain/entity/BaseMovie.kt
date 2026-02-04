@@ -1,4 +1,4 @@
-package com.example.movies.domain.model
+package com.example.movies.domain.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
