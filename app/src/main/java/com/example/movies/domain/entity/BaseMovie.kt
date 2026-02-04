@@ -15,9 +15,7 @@ data class MoviePreview(
     override val rating: String,
 ) : BaseMovie
 
-@Entity(tableName = "tableMovie")
 data class MovieDetail(
-    @PrimaryKey
     override val id: Int,
     override val rating: String,
     override val posterUrl: String,

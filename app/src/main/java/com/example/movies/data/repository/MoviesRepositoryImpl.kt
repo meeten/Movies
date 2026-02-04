@@ -68,7 +68,11 @@ class MoviesRepositoryImpl @Inject constructor(
     )
 
     override val loadedFavorites = flow {
-        emit(moviesDao.loadMoviesFavorite())
+        val favorites = moviesDao.loadMoviesFavorite()
+            .map { movieEntity ->
+                mapper.mapMovieEntityToMovieDetail(movieEntity)
+            }
+        emit(favorites)
     }
 
     override suspend fun loadNextMovies() {
@@ -91,7 +95,7 @@ class MoviesRepositoryImpl @Inject constructor(
             getApiKey()
         )
 
-        val movie = mapper.mapperResponseToMovie(movieResponse)
+        val movie = mapper.mapResponseToMovie(movieResponse)
         emit(movie)
     }.stateIn(
         scope = coroutineScope,
@@ -100,8 +104,10 @@ class MoviesRepositoryImpl @Inject constructor(
     )
 
     override suspend fun toggleFavorite(favoriteMovie: MovieDetail) {
+        val movieEntity =
+            mapper.mapMovieDetailToMovieEntity(favoriteMovie)
         if (favoriteMovie.isFavorite) {
-            moviesDao.saveMovie(favoriteMovie)
+            moviesDao.saveMovie(movieEntity)
         } else {
             moviesDao.deleteMovie(favoriteMovie.id)
         }
