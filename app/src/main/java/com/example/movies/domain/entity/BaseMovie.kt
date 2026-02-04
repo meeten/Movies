@@ -1,4 +1,4 @@
-package com.example.movies.domain.model
+package com.example.movies.domain.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -15,9 +15,7 @@ data class MoviePreview(
     override val rating: String,
 ) : BaseMovie
 
-@Entity(tableName = "tableMovie")
 data class MovieDetail(
-    @PrimaryKey
     override val id: Int,
     override val rating: String,
     override val posterUrl: String,

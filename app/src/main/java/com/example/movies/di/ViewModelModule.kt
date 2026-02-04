@@ -1,7 +1,7 @@
 package com.example.movies.di
 
 import androidx.lifecycle.ViewModel
-import com.example.movies.presentation.favorite.FavoriteMoviesViewModel
+import com.example.movies.presentation.favorite.FavoritesViewModel
 import com.example.movies.presentation.home.HomeViewModel
 import dagger.Binds
 import dagger.Module
@@ -16,7 +16,7 @@ interface ViewModelModule {
     fun bindHomeViewModel(homeViewModel: HomeViewModel): ViewModel
 
     @IntoMap
-    @ViewModelKey(FavoriteMoviesViewModel::class)
+    @ViewModelKey(FavoritesViewModel::class)
     @Binds
-    fun bindFavoritesViewModel(homeViewModel: FavoriteMoviesViewModel): ViewModel
+    fun bindFavoritesViewModel(homeViewModel: FavoritesViewModel): ViewModel
 }

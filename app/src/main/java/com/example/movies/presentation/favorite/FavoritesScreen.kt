@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.movies.di.LocalViewModelFactory
-import com.example.movies.domain.state.FavoriteMoviesState
 import com.example.movies.presentation.home.MoviesContent
 import com.example.movies.presentation.topBars.FavoriteMoviesTopBar
 import com.example.movies.ui.theme.blue
@@ -19,23 +18,23 @@ fun FavoriteMoviesScreen(
     onMovieClick: (Int) -> Unit
 ) {
     val viewModelFactory = LocalViewModelFactory.current
-    val viewModel: FavoriteMoviesViewModel =
+    val viewModel: FavoritesViewModel =
         viewModel(factory = viewModelFactory)
     val favoriteMoviesState =
-        viewModel.uiState.collectAsState(FavoriteMoviesState.Initial).value
+        viewModel.uiState.collectAsState(FavoritesScreenState.Initial).value
 
     FavoriteMoviesTopBar(onBackClick) {
         when (favoriteMoviesState) {
-            FavoriteMoviesState.Initial -> {
+            FavoritesScreenState.Initial -> {
             }
 
-            FavoriteMoviesState.Loading -> {
+            FavoritesScreenState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(color = blue)
                 }
             }
 
-            is FavoriteMoviesState.FavoriteMovies -> {
+            is FavoritesScreenState.FavoriteMovies -> {
                 MoviesContent(
                     movies = favoriteMoviesState.movies,
                     onMovieClick = onMovieClick,

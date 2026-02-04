@@ -2,9 +2,8 @@ package com.example.movies.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies.domain.DataUseCase
-import com.example.movies.domain.LoadNextMoviesUseCase
-import com.example.movies.domain.state.MoviesState
+import com.example.movies.domain.usecases.DataUseCase
+import com.example.movies.domain.usecases.LoadNextMoviesUseCase
 import com.example.movies.extensions.mergeWith
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
@@ -24,7 +23,7 @@ class HomeViewModel @Inject constructor(
     private val nextMoviesFlow = flow {
         nextMoviesNeededEvents.collect {
             emit(
-                MoviesState.Movies(
+                MoviesScreenState.Movies(
                     movies = moviesStateFlow.value,
                     isLoadingNextMovies = true
                 )
@@ -34,8 +33,8 @@ class HomeViewModel @Inject constructor(
 
     val uiState = moviesStateFlow
         .filter { it.isNotEmpty() }
-        .map { MoviesState.Movies(it) as MoviesState }
-        .onStart { emit(MoviesState.Loading) }
+        .map { MoviesScreenState.Movies(it) as MoviesScreenState }
+        .onStart { emit(MoviesScreenState.Loading) }
         .mergeWith(nextMoviesFlow)
 
     fun loadNextMovies() {

@@ -1,8 +1,8 @@
-package com.example.movies.domain
+package com.example.movies.domain.repository
 
 import com.example.movies.BuildConfig
-import com.example.movies.domain.model.MovieDetail
-import com.example.movies.domain.model.MoviePreview
+import com.example.movies.domain.entity.MovieDetail
+import com.example.movies.domain.entity.MoviePreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 

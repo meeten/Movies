@@ -1,16 +1,17 @@
 package com.example.movies.data.mapper
 
+import com.example.movies.data.database.MovieEntity
 import com.example.movies.data.model.MovieDto
 import com.example.movies.data.model.MoviesResponseDto
-import com.example.movies.domain.model.MovieDetail
-import com.example.movies.domain.model.MoviePreview
-import com.example.movies.domain.model.Trailer
+import com.example.movies.domain.entity.MovieDetail
+import com.example.movies.domain.entity.MoviePreview
+import com.example.movies.domain.entity.Trailer
 import java.util.Locale
 import javax.inject.Inject
 
 class MovieMapper @Inject constructor() {
 
-    fun mapperResponseToMovie(movieDto: MovieDto): MovieDetail {
+    fun mapResponseToMovie(movieDto: MovieDto): MovieDetail {
         val trailers = movieDto.videosDto?.trailers?.map {
             Trailer(
                 url = it.url,
@@ -50,5 +51,31 @@ class MovieMapper @Inject constructor() {
         }
 
         return result
+    }
+
+    fun mapMovieDetailToMovieEntity(movieDetail: MovieDetail): MovieEntity {
+        return MovieEntity(
+            id = movieDetail.id,
+            rating = movieDetail.rating,
+            posterUrl = movieDetail.posterUrl,
+            name = movieDetail.name,
+            year = movieDetail.year,
+            description = movieDetail.description,
+            trailers = movieDetail.trailers,
+            isFavorite = movieDetail.isFavorite
+        )
+    }
+
+    fun mapMovieEntityToMovieDetail(movieEntity: MovieEntity): MovieDetail {
+        return MovieDetail(
+            id = movieEntity.id,
+            rating = movieEntity.rating,
+            posterUrl = movieEntity.posterUrl,
+            name = movieEntity.name,
+            year = movieEntity.year,
+            description = movieEntity.description,
+            trailers = movieEntity.trailers,
+            isFavorite = movieEntity.isFavorite
+        )
     }
 }
