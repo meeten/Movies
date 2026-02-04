@@ -1,4 +1,4 @@
-package com.example.movies.data.database.dao
+package com.example.movies.data.database
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -12,7 +12,7 @@ interface MoviesDao {
     @Query("SELECT * FROM tableMovie")
     suspend fun loadMoviesFavorite(): List<MovieDetail>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     suspend fun saveMovie(movie: MovieDetail)
 
     @Query("DELETE FROM tableMovie WHERE id = :id")

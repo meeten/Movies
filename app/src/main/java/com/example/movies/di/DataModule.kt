@@ -2,7 +2,7 @@ package com.example.movies.di
 
 import android.app.Application
 import com.example.movies.data.database.MoviesDatabase
-import com.example.movies.data.database.dao.MoviesDao
+import com.example.movies.data.database.MoviesDao
 import com.example.movies.data.network.ApiFactory
 import com.example.movies.data.network.ApiService
 import dagger.Module

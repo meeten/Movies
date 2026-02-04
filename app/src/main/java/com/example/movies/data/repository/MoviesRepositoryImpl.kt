@@ -1,7 +1,7 @@
 package com.example.movies.data.repository
 
 import android.util.Log
-import com.example.movies.data.database.dao.MoviesDao
+import com.example.movies.data.database.MoviesDao
 import com.example.movies.data.mapper.MovieMapper
 import com.example.movies.data.network.ApiService
 import com.example.movies.domain.repository.MoviesRepository

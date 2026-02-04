@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.movies.data.database.dao.MoviesDao
+import com.example.movies.data.database.MoviesDao
 import com.example.movies.domain.entity.MovieDetail
 
 @Database(entities = [MovieDetail::class], version = 1, exportSchema = false)
