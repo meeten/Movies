@@ -46,7 +46,6 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.example.movies.di.LocalViewModelFactory
 import com.example.movies.domain.model.BaseMovie
-import com.example.movies.domain.state.MoviesState
 import com.example.movies.presentation.topBars.HomeTopBar
 import com.example.movies.ui.theme.blue
 
@@ -58,14 +57,14 @@ fun HomeScreen(
 ) {
     val viewModelFactory = LocalViewModelFactory.current
     val viewModel: HomeViewModel = viewModel(factory = viewModelFactory)
-    val moviesState = viewModel.uiState.collectAsState(MoviesState.Initial).value
+    val moviesState = viewModel.uiState.collectAsState(MoviesScreenState.Initial).value
 
 
     HomeTopBar(onMoreVertClick = onMoreVertClick) {
         when (moviesState) {
-            is MoviesState.Initial -> {}
+            is MoviesScreenState.Initial -> {}
 
-            is MoviesState.Loading -> {
+            is MoviesScreenState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -76,7 +75,7 @@ fun HomeScreen(
                 }
             }
 
-            is MoviesState.Error -> {
+            is MoviesScreenState.Error -> {
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -84,7 +83,7 @@ fun HomeScreen(
                 }
             }
 
-            is MoviesState.Movies -> {
+            is MoviesScreenState.Movies -> {
                 MoviesContent(
                     viewModel = viewModel,
                     movies = moviesState.movies,

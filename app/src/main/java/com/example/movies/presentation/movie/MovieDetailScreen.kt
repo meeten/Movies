@@ -42,7 +42,6 @@ import coil.request.ImageRequest
 import com.example.movies.R
 import com.example.movies.di.LocalAppComponent
 import com.example.movies.domain.model.MovieDetail
-import com.example.movies.domain.state.MovieState
 import com.example.movies.presentation.topBars.MovieTopBar
 import com.example.movies.ui.theme.blue
 
@@ -58,13 +57,13 @@ fun MovieDetailScreen(
 
     val viewModel: MovieDetailViewModel =
         viewModel(factory = movieDetailComponent.movieDetailViewModelFactory())
-    val movieState = viewModel.uiState.collectAsState(MovieState.Initial).value
+    val movieState = viewModel.uiState.collectAsState(MovieScreenState.Initial).value
 
     MovieTopBar(onBackClick) {
         when (movieState) {
-            MovieState.Initial -> {}
+            MovieScreenState.Initial -> {}
 
-            MovieState.Loading -> {
+            MovieScreenState.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -73,7 +72,7 @@ fun MovieDetailScreen(
                 }
             }
 
-            is MovieState.Movie -> {
+            is MovieScreenState.Movie -> {
                 MovieDetailContent(
                     viewModel,
                     movieState.movie
@@ -83,14 +82,13 @@ fun MovieDetailScreen(
     }
 }
 
-
 @Composable
 fun MovieDetailContent(
     viewModel: MovieDetailViewModel,
     movie: MovieDetail,
 ) {
     val context = LocalContext.current
-    var isSuccessLoading by remember { mutableStateOf(false) }
+    var isSuccessLoadingImage by remember { mutableStateOf(false) }
 
     LazyColumn {
         item {
@@ -111,7 +109,7 @@ fun MovieDetailContent(
                             is AsyncImagePainter.State.Error -> {}
                             is AsyncImagePainter.State.Loading -> {}
                             is AsyncImagePainter.State.Success -> {
-                                isSuccessLoading = true
+                                isSuccessLoadingImage = true
                             }
                         }
                     },
@@ -119,7 +117,7 @@ fun MovieDetailContent(
                     contentScale = ContentScale.Crop
                 )
 
-                if (isSuccessLoading) {
+                if (isSuccessLoadingImage) {
                     IconButton(
                         onClick = {
                             viewModel.toggleFavorite(movie.isFavorite)
@@ -139,7 +137,7 @@ fun MovieDetailContent(
             }
         }
 
-        if (isSuccessLoading) {
+        if (isSuccessLoadingImage) {
             item {
                 Text(
                     text = movie.name,

@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movies.domain.LoadMovieUseCase
 import com.example.movies.domain.ToggleFavoriteUseCase
-import com.example.movies.domain.state.MovieState
 import com.example.movies.extensions.mergeWith
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
@@ -19,14 +18,14 @@ class MovieDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val movieFlow = loadMovieUseCase(movieId)
-    private val refreshMovieFlow = MutableSharedFlow<MovieState>()
+    private val refreshMovieFlow = MutableSharedFlow<MovieScreenState>()
 
     val uiState = movieFlow
         .map {
-            it?.let { movie -> MovieState.Movie(movie) as MovieState }
-                ?: MovieState.Loading
+            it?.let { movie -> MovieScreenState.Movie(movie) as MovieScreenState }
+                ?: MovieScreenState.Loading
         }
-        .onStart { emit(MovieState.Loading) }
+        .onStart { emit(MovieScreenState.Loading) }
         .mergeWith(refreshMovieFlow)
 
     fun toggleFavorite(isFavorite: Boolean) {
@@ -34,7 +33,7 @@ class MovieDetailViewModel @Inject constructor(
             movieFlow.value?.let { movie ->
                 val modifiedMovie = movie.copy(isFavorite = !isFavorite)
                 toggleFavoriteUseCase(modifiedMovie)
-                refreshMovieFlow.emit(MovieState.Movie(modifiedMovie))
+                refreshMovieFlow.emit(MovieScreenState.Movie(modifiedMovie))
             }
         }
     }
